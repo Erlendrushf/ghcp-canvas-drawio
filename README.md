@@ -4,13 +4,23 @@ A read-only, offline diagrams.net viewer for local `.drawio`, `.dio`, and compat
 
 ## Status
 
-The renderer, local HTTP provider, file watching, icon importing, and Canvas declaration adapter are implemented. **Copilot discovery is not yet enabled:** this environment does not expose the canonical `extensions_manage` scaffolding or `extensions_reload` tools required by the app's authoring workflow. There is deliberately no hand-written `extension.mjs` substitute.
+The extension includes a runtime entry point generated with the canonical Canvas scaffold and wired to the offline viewer. Real Copilot runtime checks cover discovery, open, actions, input validation, reload/rehydration, and close. Browser checks cover rendering from the URL returned by the runtime. These checks do not automate the desktop app's installer or panel chrome.
 
-The source is on `implement-drawio-viewer`. No remote repository, user-wide installation, or publishing is configured.
+## Install in Copilot
 
-To finish app integration when those tools are available, use the app's `/create-canvas` workflow: read the extension guide, scaffold a project Canvas named `drawio-viewer`, wire the generated entry point to `createDrawioCanvas` exported by `canvas.mjs`, then reload and verify discovery, open, actions, schema validation, reconnect, and close. The adapter expects the runtime's active session working directory. Preserve the existing implementation when scaffolding.
+Use **Install extension from GitHub** with the extension folder URL:
 
-Standalone browser rendering is not a substitute for these runtime checks. The Canvas wire protocol is experimental.
+```text
+https://github.com/Erlendrushf/ghcp-canvas-drawio/tree/implement-drawio-viewer/.github/extensions/drawio-viewer
+```
+
+The repository root also contains a forwarding `extension.mjs`, so a repository-root installation can load the same viewer. The folder URL above installs only the extension and its assets, without development scripts or tests. Both URLs require a revision containing the entry-point fix; unpublished local changes are not available to the GitHub installer.
+
+Choose **project** scope to share the extension and tracked icon packs with a repository. Cloning and opening this repository also makes `.github/extensions/drawio-viewer/extension.mjs` available to project discovery. If the current conversation predates the entry point, reload extensions or start a new conversation.
+
+Ask Copilot to open a diagram, for example: "Open `examples/azure.drawio` in the draw.io viewer." The Canvas ID is `drawio-viewer`, and its open input is `{ "path": "examples/azure.drawio" }`. Paths are relative to the active session's working directory, not the extension installation directory.
+
+The Canvas wire protocol is experimental.
 
 ## Run the implemented viewer locally
 
@@ -85,6 +95,16 @@ Alternatively, run browser tests with an existing installed Chrome:
 PLAYWRIGHT_CHANNEL=chrome npm test
 ```
 
+For real extension registration and lifecycle checks, point to an installed SDK and CLI. For example, on macOS with the Copilot desktop app:
+
+```sh
+COPILOT_CLI_PATH="$(command -v copilot)" \
+COPILOT_SDK_PATH="/Applications/GitHub Copilot.app/Contents/Resources/copilot-sdk" \
+PLAYWRIGHT_CHANNEL=chrome npm run test:runtime
+```
+
+The runtime checks use an isolated temporary Copilot home, launch no model turns, and remove their temporary installation after stopping the runtime. They exercise both direct project discovery and a copied repository-root installation without root `node_modules`. Reload is driven through the public `session.extensions.reload()` RPC.
+
 Tests cover document decoding, inclusive limits, XML/entity rejection, path/symlink boundaries, icon validation and persistence, exact resource mappings, loopback access control, atomic file replacements, deletion/recovery, adapter lifecycle, and browser rendering with non-loopback requests blocked. Browser checks exercise Azure SVGs, legacy Microsoft/Azure stencil loading, and importing mapped resources while preserving diagram bytes.
 
 Asset preparation is an explicit developer operation, not an application-startup side effect:
@@ -95,11 +115,11 @@ npm run assets:prepare
 
 The script downloads pinned draw.io source and copies a defined set of assets, recording SHA-256 checksums. It also vendors the declared XML parser with its license and checksums so the extension does not depend on root `node_modules` at runtime. Integrity checks detect local changes; they do not replace review of an upstream update. Review manifests and notices whenever updating dependencies.
 
-The source layout separates `canvas.mjs` (runtime declaration), `lib/` (provider), `ui/` (renderer), `assets/vendor/` (pinned runtime dependencies), and `assets/icon-packs/` (project imports).
+The extension folder separates `extension.mjs` (SDK registration), `canvas.mjs` (runtime declaration), `lib/` (provider), `ui/` (renderer), `assets/vendor/` (pinned runtime dependencies), and `assets/icon-packs/` (project imports).
 
 ## Distribution and known limitations
 
-Distribute the complete extension folder through a repository/folder mechanism after verifying that mechanism and completing app registration. Do not rely on Gist sharing: the viewer exceeds its documented per-file size limit, and the complete offline resources exceed the total limit.
+Distribute the complete extension folder through a repository/folder mechanism, preserving its assets and subdirectories. Do not rely on Gist sharing: the viewer exceeds its documented per-file size limit, and the complete offline resources exceed the total limit.
 
 Automatic app file associations, remote/cloud workspaces, binary `.drawio.png`/`.drawio.svg` import, mathematical typesetting, and arbitrary Microsoft icon sets are outside this version. Supported icon inventory is pinned, not a promise that every future Microsoft resource is present. Use local mappings for gaps.
 
