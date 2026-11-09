@@ -8,18 +8,21 @@ import { chromium } from "playwright";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
-for (const layout of ["project", "repository-root"]) {
+for (const layout of ["project", "repository-root", "compact"]) {
   test(`installed SDK discovers, routes, reloads and closes the ${layout} extension`, { timeout: 120_000 }, async () => {
     assert.ok(process.env.COPILOT_SDK_PATH, "Set COPILOT_SDK_PATH to the installed copilot-sdk directory");
     assert.ok(process.env.COPILOT_CLI_PATH, "Set COPILOT_CLI_PATH to the absolute path of the Copilot CLI executable");
     const sdk = resolve(process.env.COPILOT_SDK_PATH);
     const { CopilotClient, RuntimeConnection } = await import(pathToFileURL(join(sdk, "index.js")).href);
     const home = await mkdtemp(join(tmpdir(), "drawio-runtime-"));
-    if (layout === "repository-root") {
+    if (layout !== "project") {
       const installed = join(home, "extensions/ghcp-canvas-drawio");
       await mkdir(installed, { recursive: true });
-      await cp(join(root, "extension.mjs"), join(installed, "extension.mjs"));
-      await cp(join(root, ".github/extensions/drawio-viewer"), join(installed, ".github/extensions/drawio-viewer"), { recursive: true });
+      if (layout === "compact") await cp(join(root, "canvas-extension"), installed, { recursive: true });
+      else {
+        await cp(join(root, "extension.mjs"), join(installed, "extension.mjs"));
+        await cp(join(root, ".github/extensions/drawio-viewer"), join(installed, ".github/extensions/drawio-viewer"), { recursive: true });
+      }
     }
     const client = new CopilotClient({
       connection: RuntimeConnection.forStdio({ path: process.env.COPILOT_CLI_PATH }),
@@ -98,6 +101,13 @@ for (const layout of ["project", "repository-root"]) {
       });
       await page.goto(opened.url);
       await page.locator("#status").filter({ hasText: "1 page(s)" }).waitFor();
+      await page.evaluate(() => {
+        for (const file of ["azure.xml", "office/servers.xml", "mscae/cloud.xml"]) {
+          const doc = mxStencilRegistry.loadStencil(`${STENCIL_PATH}/${file}`);
+          if (!doc?.documentElement) throw new Error(`Missing Microsoft stencil family: ${file}`);
+          mxStencilRegistry.parseStencilSet(doc.documentElement, null, true);
+        }
+      });
       await page.evaluate(async () => {
         const element = Array.from(document.querySelectorAll("image")).find(image =>
           (image.getAttribute("href") || image.getAttribute("xlink:href") || "").includes("Azure_OpenAI"));

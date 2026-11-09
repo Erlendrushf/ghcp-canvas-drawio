@@ -11,10 +11,14 @@ The extension includes a runtime entry point generated with the canonical Canvas
 Use **Install extension from GitHub** with the extension folder URL:
 
 ```text
-https://github.com/Erlendrushf/ghcp-canvas-drawio/tree/implement-drawio-viewer/.github/extensions/drawio-viewer
+https://github.com/Erlendrushf/ghcp-canvas-drawio/tree/implement-drawio-viewer/canvas-extension
 ```
 
-The repository root also contains a forwarding `extension.mjs`, so a repository-root installation can load the same viewer. The folder URL above installs only the extension and its assets, without development scripts or tests. Both URLs require a revision containing the entry-point fix; unpublished local changes are not available to the GitHub installer.
+**Use the `canvas-extension` folder, not the repository root or `.github/extensions/drawio-viewer`.** The GitHub installer enforces a 5,000,000-byte total limit. The source extension exceeds that limit even without its icons; the generated install folder fits it. The URL must reference a revision containing this packaging fix; unpublished local changes are not available to the GitHub installer.
+
+The compact package contains losslessly Brotli-compressed vendor assets in chunks smaller than 1,000,000 bytes. It retains the full viewer and stencil bundle and the same Microsoft/Azure icons. The local provider verifies chunk checksums and decodes the bundle in memory; no first-run download, external CDN, filesystem extraction, or internet connection is required. Only editor-only sidebar preview thumbnails, editor styles, and an unused editor font are excluded.
+
+The root forwarding `extension.mjs` supports local-checkout discovery, not size-limited GitHub installation. The uncompressed source folder remains available for development.
 
 Choose **project** scope to share the extension and tracked icon packs with a repository. Cloning and opening this repository also makes `.github/extensions/drawio-viewer/extension.mjs` available to project discovery. If the current conversation predates the entry point, reload extensions or start a new conversation.
 
@@ -103,7 +107,7 @@ COPILOT_SDK_PATH="/Applications/GitHub Copilot.app/Contents/Resources/copilot-sd
 PLAYWRIGHT_CHANNEL=chrome npm run test:runtime
 ```
 
-The runtime checks use an isolated temporary Copilot home, launch no model turns, and remove their temporary installation after stopping the runtime. They exercise both direct project discovery and a copied repository-root installation without root `node_modules`. Reload is driven through the public `session.extensions.reload()` RPC.
+Run `npm run package:extension` before the runtime checks after changing source files. The runtime checks use an isolated temporary Copilot home, launch no model turns, and remove their temporary installation after stopping the runtime. They exercise direct project discovery, a copied repository-root installation, and the compact install package without root `node_modules`. Reload is driven through the public `session.extensions.reload()` RPC.
 
 Tests cover document decoding, inclusive limits, XML/entity rejection, path/symlink boundaries, icon validation and persistence, exact resource mappings, loopback access control, atomic file replacements, deletion/recovery, adapter lifecycle, and browser rendering with non-loopback requests blocked. Browser checks exercise Azure SVGs, legacy Microsoft/Azure stencil loading, and importing mapped resources while preserving diagram bytes.
 
@@ -111,15 +115,19 @@ Asset preparation is an explicit developer operation, not an application-startup
 
 ```sh
 npm run assets:prepare
+npm run package:extension
+npm run package:verify
 ```
 
-The script downloads pinned draw.io source and copies a defined set of assets, recording SHA-256 checksums. It also vendors the declared XML parser with its license and checksums so the extension does not depend on root `node_modules` at runtime. Integrity checks detect local changes; they do not replace review of an upstream update. Review manifests and notices whenever updating dependencies.
+Asset preparation downloads pinned draw.io source and copies a defined set of assets, recording SHA-256 checksums. It also vendors the declared XML parser with its license and checksums so the extension does not depend on root `node_modules` at runtime. Packaging is deterministic and offline, copies runtime code into `canvas-extension/`, checks the decoded vendor bytes against the original checksums, and fails if any file exceeds 1,000,000 bytes or the folder exceeds 5,000,000 bytes. Commit the regenerated install folder alongside source changes. Imported packs count against this same installation budget when included in a regenerated package.
+
+Integrity checks detect local changes; they do not replace review of an upstream update. Review manifests and notices whenever updating dependencies.
 
 The extension folder separates `extension.mjs` (SDK registration), `canvas.mjs` (runtime declaration), `lib/` (provider), `ui/` (renderer), `assets/vendor/` (pinned runtime dependencies), and `assets/icon-packs/` (project imports).
 
 ## Distribution and known limitations
 
-Distribute the complete extension folder through a repository/folder mechanism, preserving its assets and subdirectories. Do not rely on Gist sharing: the viewer exceeds its documented per-file size limit, and the complete offline resources exceed the total limit.
+Distribute the generated `canvas-extension` folder through the GitHub repository-folder mechanism, preserving all chunks and subdirectories. Do not use the uncompressed source folder with the size-limited installer. Gist sharing is unsupported because the package contains binary compressed chunks.
 
 Automatic app file associations, remote/cloud workspaces, binary `.drawio.png`/`.drawio.svg` import, mathematical typesetting, and arbitrary Microsoft icon sets are outside this version. Supported icon inventory is pinned, not a promise that every future Microsoft resource is present. Use local mappings for gaps.
 

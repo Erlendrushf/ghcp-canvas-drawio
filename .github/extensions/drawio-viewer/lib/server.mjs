@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { loadDocument, LIMITS } from "./documents.mjs";
 import { prepareView } from "./resources.mjs";
 import { importPack, readPacks } from "./icon-packs.mjs";
+import { loadVendor } from "./vendor.mjs";
 
 const extensionRoot = fileURLToPath(new URL("../", import.meta.url));
 const vendorRoot = join(extensionRoot, "assets/vendor/drawio");
@@ -30,6 +31,7 @@ async function readJson(request) {
   return JSON.parse(Buffer.concat(parts).toString("utf8"));
 }
 export async function startViewer({ root, path, iconDirectory = join(extensionRoot, "assets/icon-packs") }) {
+  const vendor = await loadVendor(vendorRoot);
   const token = randomBytes(32).toString("hex");
   const prefix = `/${token}/`;
   const clients = new Set();
@@ -42,7 +44,7 @@ export async function startViewer({ root, path, iconDirectory = join(extensionRo
       try {
         const loaded = await loadDocument(root, path);
         const mappings = await readPacks(iconDirectory);
-        const view = await prepareView(loaded, vendorRoot, mappings, `${origin}${prefix}`);
+        const view = await prepareView(loaded, vendor, mappings, `${origin}${prefix}`);
         state = { path, hash: loaded.hash, bytes: loaded.bytes, pages: loaded.pages, ...view };
       } catch (error) {
         state = { path, error: error.message, diagnostics: [], missing: [] };
@@ -92,7 +94,7 @@ export async function startViewer({ root, path, iconDirectory = join(extensionRo
       }
       if (request.method !== "GET") { response.writeHead(405).end("Method not allowed"); return; }
       let data;
-      if (route.startsWith("vendor/")) data = await safeAsset(vendorRoot, route.slice(7));
+      if (route.startsWith("vendor/")) data = await vendor.read(route.slice(7));
       else if (route.startsWith("icons/")) {
         if (!/^[\w.-]+\/[\w.-]+\.(svg|png)$/i.test(route.slice(6))) throw new Error("Invalid icon path");
         data = await safeAsset(iconDirectory, route.slice(6));
