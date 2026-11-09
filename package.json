@@ -1,0 +1,19 @@
+{
+  "name": "copilot-drawio-viewer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "node --test tests/browser.test.mjs",
+    "assets:prepare": "node scripts/prepare-drawio-assets.mjs && node scripts/prepare-parser.mjs",
+    "assets:verify": "node scripts/prepare-drawio-assets.mjs --verify && node scripts/prepare-parser.mjs --verify",
+    "preview": "node scripts/preview.mjs"
+  },
+  "engines": { "node": ">=22.2" },
+  "dependencies": {
+    "@xmldom/xmldom": "0.9.12"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}

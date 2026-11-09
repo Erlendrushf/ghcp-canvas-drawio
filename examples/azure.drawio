@@ -1,0 +1,19 @@
+<mxfile compressed="false">
+  <diagram id="azure" name="Azure">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="client" value="Application" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="160" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="openai" value="Azure OpenAI" style="shape=image;verticalLabelPosition=bottom;verticalAlign=top;image=img/lib/azure2/ai_machine_learning/Azure_OpenAI.svg;" vertex="1" parent="1">
+          <mxGeometry x="320" y="80" width="70" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="connection" value="Request" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;" edge="1" parent="1" source="client" target="openai">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>draw.io viewer</title>
+  <link rel="stylesheet" href="viewer.css">
+  <script src="setup.js"></script>
+  <script src="vendor/js/viewer-static.min.js"></script>
+  <script src="vendor/js/stencils.min.js"></script>
+  <script src="viewer.js" defer></script>
+</head>
+<body>
+  <header>
+    <strong id="filename">draw.io viewer</strong>
+    <span>Read-only / Offline</span>
+    <button id="refresh" type="button">Refresh</button>
+    <button id="fit" type="button">Fit</button>
+    <button id="zoom-out" type="button" aria-label="Zoom out">−</button>
+    <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+    <button id="reset" type="button">100%</button>
+  </header>
+  <p id="status" role="status">Loading diagram…</p>
+  <details id="issues"><summary>Resource diagnostics</summary><ul id="diagnostics"></ul></details>
+  <main id="diagram" tabindex="0" aria-label="Read-only diagram"></main>
+  <details id="imports">
+    <summary>Import local icon pack</summary>
+    <p>Imports add tracked project assets, never change the diagram. Select SVG/PNG files, review names and exact resource mappings, then import. Existing packs are never replaced.</p>
+    <label>Pack name <input id="pack-name" required pattern="[A-Za-z0-9][A-Za-z0-9._-]{0,80}" placeholder="team-azure"></label>
+    <label>Source and usage rights <input id="provenance" required placeholder="Source URL and applicable icon terms"></label>
+    <label>SVG/PNG files <input id="files" type="file" accept=".svg,.png" multiple></label>
+    <datalist id="missing"></datalist>
+    <div id="mapping-fields"></div>
+    <p>Destination: <code>.github/extensions/drawio-viewer/assets/icon-packs/&lt;pack-name&gt;/</code></p>
+    <button id="import" type="button">Import reviewed files and mappings</button>
+    <p id="import-status" role="status"></p>
+  </details>
+</body>
+</html>
