@@ -11,7 +11,7 @@ The extension includes a runtime entry point generated with the canonical Canvas
 Use **Install extension from GitHub** with the extension folder URL:
 
 ```text
-https://github.com/Erlendrushf/ghcp-canvas-drawio/tree/implement-drawio-viewer/canvas-extension
+https://github.com/Erlendrushf/ghcp-canvas-drawio/tree/compact-offline-package/canvas-extension
 ```
 
 **Use the `canvas-extension` folder, not the repository root or `.github/extensions/drawio-viewer`.** The GitHub installer enforces a 5,000,000-byte total limit. The source extension exceeds that limit even without its icons; the generated install folder fits it. The URL must reference a revision containing this packaging fix; unpublished local changes are not available to the GitHub installer.
@@ -59,13 +59,15 @@ The UI uses app theme variables for its controls. The diagram surface remains li
 3. Map each file to an **exact** missing resource identifier; diagnostics supply suggestions.
 4. Review the destination and mappings, then select **Import reviewed files and mappings**.
 
-Imports write only to:
+Imports write only to the installed extension's `assets/icon-packs/<pack-name>/` directory. For project-source discovery that is:
 
 ```text
 .github/extensions/drawio-viewer/assets/icon-packs/<pack-name>/
 ```
 
 Each pack contains its assets and `manifest.json` with checksums, provenance, and explicit aliases. Commit the pack with the project so other users receive the same icons. Existing packs and aliases cannot be silently overwritten. ZIP files, executable content, external SVG references, SVG style attributes, and unsupported formats are rejected. Only use icons whose terms permit their intended use and distribution.
+
+For a compact-folder installation the destination is inside that installed folder, not the development source folder. Copy packs intended for redistribution back to the source extension's `assets/icon-packs/` before regenerating `canvas-extension`; generation replaces the generated folder.
 
 Importing does not modify the source diagram. The renderer resolves aliases in memory. An invalid pack or checksum mismatch is reported explicitly on loading.
 
