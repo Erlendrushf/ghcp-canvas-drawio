@@ -1,0 +1,13 @@
+const base = new URL("vendor/", location.href).href.replace(/\/$/, "");
+window.PROXY_URL = `${base}/disabled-proxy`;
+window.STYLE_PATH = `${base}/styles`;
+window.SHAPES_PATH = `${base}/shapes`;
+window.STENCIL_PATH = `${base}/stencils`;
+window.DRAW_MATH_URL = `${base}/disabled-math`;
+window.GRAPH_IMAGE_PATH = `${base}/img`;
+window.mxImageBasePath = `${base}/mxgraph/images`;
+window.mxBasePath = `${base}/mxgraph/`;
+window.mxLoadStylesheets = false;
+window.DRAWIO_BASE_URL = location.origin;
+window.DRAWIO_LIGHTBOX_URL = location.origin;
+window.onDrawioViewerLoad = () => {};

@@ -25,7 +25,13 @@ export async function prepareView(loaded, vendorDirectory, mappings, prefix) {
     }
     path = path.replace(/^\.\//, "");
     if (/^(img\/lib\/|images\/|mxgraph\/images\/)/.test(path) && !/[\\?#]/.test(path) && !path.split("/").includes("..")) {
-      try { await access(join(vendorDirectory, path)); return `${prefix}vendor/${path}`; } catch { /* Report unresolved resource below. */ }
+      try {
+        if (typeof vendorDirectory === "string") await access(join(vendorDirectory, path));
+        else if (!await vendorDirectory.has(path)) throw Object.assign(new Error("Missing vendor asset"), { code: "ENOENT" });
+        return `${prefix}vendor/${path}`;
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
     }
     missing.add(original);
     diagnostics.add(`Unresolved or blocked image: ${original.slice(0, 180)}`);

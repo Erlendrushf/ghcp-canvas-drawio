@@ -6,7 +6,7 @@ Source: <https://github.com/jgraph/drawio>
 
 Pinned commit: `c72c9a98b7a6ce392556ed04c05e0ff19f43f5c3`
 
-The original root Apache-2.0 license is retained at `.github/extensions/drawio-viewer/assets/vendor/drawio/LICENSE`.
+The original root Apache-2.0 license is retained at `.github/extensions/drawio-viewer/assets/vendor/drawio/LICENSE`. In the compact `canvas-extension` install folder, this license and the image/shape/stencil notices are retained as plain files under `assets/vendor/drawio/` as well as inside the lossless vendor bundle.
 
 Additional original notices are retained under `img/LICENSE`, `shapes/LICENSE`, and `stencils/LICENSE` within that vendor directory. They include restrictions relating to using the icon/stencil assets in Atlassian products and its marketplace ecosystem. The root Apache license alone is not a complete statement of every asset's terms.
 
@@ -20,7 +20,7 @@ Source: <https://github.com/xmldom/xmldom>
 
 Package: `@xmldom/xmldom` version `0.9.12`
 
-The package's original license is retained at `.github/extensions/drawio-viewer/assets/vendor/xmldom/LICENSE`. Its unmodified runtime library and package metadata are vendored, with a checksum manifest.
+The package's original license is retained at `.github/extensions/drawio-viewer/assets/vendor/xmldom/LICENSE` and, in the compact installation, `assets/vendor/xmldom/LICENSE`. Its unmodified runtime library and package metadata are vendored, with a checksum manifest.
 
 ## Development dependencies and imports
 

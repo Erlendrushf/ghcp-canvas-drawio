@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "revision": "c72c9a98b7a6ce392556ed04c05e0ff19f43f5c3",
+  "decodedBytes": 13152105,
+  "chunks": [
+    {
+      "path": "bundle-0.br",
+      "bytes": 900000,
+      "sha256": "10418f564df0b8d54ed04640b6ca6831fce6d779212e25b7f8f836abefca694d"
+    },
+    {
+      "path": "bundle-1.br",
+      "bytes": 900000,
+      "sha256": "de958b08cdb5d19e8de9334439b6950ddab189bd43583693ae611c368fc36114"
+    },
+    {
+      "path": "bundle-2.br",
+      "bytes": 900000,
+      "sha256": "675020df2c4188e21a74f13c12a7489777b2f77a58a17494d9ee1342c6e9bcb2"
+    },
+    {
+      "path": "bundle-3.br",
+      "bytes": 900000,
+      "sha256": "2b98923e51cc2542cbc1a5cf9df6a78fc0f23ecd57442060577e44e7b8d9220e"
+    },
+    {
+      "path": "bundle-4.br",
+      "bytes": 900000,
+      "sha256": "820bac69ed240c26d6a4fbc70f9571ab5e77d9e58fc7748c7d401c6fc961fd1e"
+    },
+    {
+      "path": "bundle-5.br",
+      "bytes": 108699,
+      "sha256": "a14c0b806a6b800a82cb28361d2421110e850b3ec5da31dc6dfdce3d05b4894e"
+    }
+  ]
+}
